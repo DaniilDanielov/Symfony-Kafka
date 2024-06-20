@@ -1,4 +1,3 @@
-	include .env
 build: docker-build docker-init
 rebuild: docker-down docker-prune docker-build docker-init
 init: docker-init
@@ -38,7 +37,7 @@ envs: create_envs create_env_files create_initial_sql_files
 
 #Инициализация env файлов
 create_envs:
-	(test -f .env || touch .env) &&\
+	test -f .env || touch .env
 	grep -P '^\tinclude .env' Makefile || sed -i '1s/^/\tinclude .env\n/' Makefile
 	test -f ./.env.secrets || cp -n ./.env.vars.secrets ./.env.secrets
 
