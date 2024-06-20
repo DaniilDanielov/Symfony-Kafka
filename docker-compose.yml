@@ -12,11 +12,10 @@ services:
         depends_on:
             - database
         networks:
-            - ${NETWORK_NAME}
-
+            - symfony_network
 
     symfony_app:
-        container_name: ${APP_CONTAINER}
+        container_name: symfony_app
         build:
             context: ./docker/php
         ports:
@@ -35,7 +34,7 @@ services:
         env_file:
             - .env
         networks:
-            - ${NETWORK_NAME}
+            - symfony_network
 
 
     database:
@@ -47,10 +46,11 @@ services:
             - .env
         volumes:
             - data-pgsql:/var/lib/postgresql/data
-            - ./docker/pgsql/sql-dist/:/docker-entrypoint-initdb.d/
+            - ./docker/postgres/sql-dist/:/docker-entrypoint-initdb.d/
+#            - ./docker/postgres/data/:/var/lib/postgresql/data:rw
 #            - ./docker/postgres/data/:/var/lib/postgresql/data:rw
         networks:
-            - ${NETWORK_NAME}
+            - symfony_network
 
     redis:
         image: 'redis:alpine'
@@ -59,7 +59,7 @@ services:
         volumes:
             - 'redis:/data'
         networks:
-            - ${NETWORK_NAME}
+            - symfony_network
 
 
     zookeeper-1:
@@ -134,6 +134,7 @@ services:
 networks:
     symfony_network:
         driver: bridge
+
 volumes:
     data-pgsql:
         driver: local
