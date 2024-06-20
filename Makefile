@@ -1,36 +1,48 @@
 build: docker-build docker-init
 rebuild: docker-down docker-prune docker-build docker-init
-init: cdu docker-init
-du: cdu docker-up
-dd: cdu docker-down
+init: envs docker-init
+du: docker-up cdu
+dd: docker-down
+
+	include .env
+
+
+test:
+	echo test
+
+test2:
+	(test -f .env || touch .env)
+#&& sed -i '1s/^/\tinclude .env\n/' Makefile
 
 cdu:
-	 docker-compose exec app composer du || true
+	 docker-compose exec ${APP_CONTAINER} composer du || true
 
 docker-down:
 	docker-compose down --remove-orphans || true
 
-docker-up: cdu
+docker-up:
 	docker-compose up -d
 
-docker-build: cdu
+docker-build:
 	docker-compose build
 
-docker-init: cdu docker-volume
-	docker-compose down
-	docker-compose up -d
-
-docker-volume:
-	docker volume create --name data-pgsql || true
+docker-init:
+	make dd
+	make du
 
 restart: docker-down docker-up
 
-#init: cdu
-#	docker-compose exec app php ./init
-#	docker-compose exec app composer i -o --no-interaction --ignore-platform-reqs
+secrets:
+	(test -f .env || touch .env)
+#&& sed -i '1s/^/include .env\n/' Makefile
+	test -f ./.env.secrets || cp -n ./.env.vars.secrets ./.env.secrets
+
+envs: secrets
+	set -a && . ./.env.vars.dev  && . ./.env.secrets && set +a && USER_ID=$$(id -u) envsubst < ./.env.template 	> ./.env
+	set -a && . ./.env && set +a && cp -f ./docker/pgsql/sql-template/100.sql ./docker/pgsql/sql-dist/100.sql && ep ./docker/pgsql/sql-dist/100.sql
 
 docker-prune:
 	docker-compose rm -fsv
 
 php:
-	docker-compose exec -it app
+	docker-compose exec -it ${APP_CONTAINER}
