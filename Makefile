@@ -1,6 +1,7 @@
+	include .env
 build: docker-build docker-init
 rebuild: docker-down docker-prune docker-build docker-init
-init: docker-init
+init: envs docker-init
 du: docker-up cdu
 dd: docker-down
 
@@ -30,7 +31,7 @@ docker-prune:
 	docker-compose rm -fsv
 
 php:
-	docker-compose exec -it ${APP_CONTAINER}
+	docker-compose exec -it symfony_app
 
 # Инициализация переменных и их внесение в template файлы
 envs: create_envs create_env_files create_initial_sql_files

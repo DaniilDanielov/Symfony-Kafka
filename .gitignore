@@ -6,7 +6,7 @@
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
-/vendor/
+/vendor/*
 ###< symfony/framework-bundle ###
 # Cache and logs (Symfony2)
 /app/cache/*
@@ -16,9 +16,10 @@
 
 # Email spool folder
 /app/spool/*
-
+!.gitignore
 # Cache, session files and logs (Symfony3)
 /var/cache/*
+/var/cache/dev
 /var/logs/*
 /var/sessions/*
 !var/cache/.gitkeep
@@ -39,12 +40,12 @@
 /bin/*
 !bin/console
 !bin/symfony_requirements
-/vendor/
 
+
+.idea
 # Assets and user uploads
 /web/bundles/
 /web/uploads/
-
 # PHPUnit
 /app/phpunit.xml
 /phpunit.xml
